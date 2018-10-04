@@ -174,6 +174,14 @@ def process_login():
             flash("Incorrect password")
             return redirect("/login")
 
+@app.route("/logout")
+def process_logout():
+
+    del session["logged_in_customer_email"]
+    flash("You are now logged out!")
+
+    return redirect("/melons")
+
 
 @app.route("/checkout")
 def checkout():
