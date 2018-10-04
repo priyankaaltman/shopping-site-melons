@@ -6,9 +6,9 @@ put melons in a shopping cart.
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken, Katie Byers.
 """
 
-from flask import Flask, render_template, redirect, flash, session
+from flask import Flask, render_template, redirect, flash, session, request
 import jinja2
-
+import customers
 import melons
 
 app = Flask(__name__)
@@ -95,11 +95,7 @@ def show_shopping_cart():
         cart_list.append(melon_obj)
         total_order_price += melon_obj.total_price
 
-
-
-
-    return render_template("cart.html", cart_list=cart_list, 
-        total=total_order_price)
+    return render_template("cart.html", cart_list=cart_list, total=total_order_price)
 
 
 @app.route("/add_to_cart/<melon_id>")
@@ -159,9 +155,24 @@ def process_login():
     #   message and redirect the user to the "/melons" route
     # - if they don't, flash a failure message and redirect back to "/login"
     # - do the same if a Customer with that email doesn't exist
+    
+    username = request.form['email']
+    password = request.form['password']
 
+    if not customers.get_by_email(username):
+        flash("No customer with that email found.")
+        return redirect("/login")
 
-    return "Oops! This needs to be implemented"
+    else:
+        customer = customers.get_by_email(username)
+
+        if password == customer.password:
+            session["logged_in_customer_email"] = username
+            flash("Login successful!")
+            return redirect("/melons")
+        else:
+            flash("Incorrect password")
+            return redirect("/login")
 
 
 @app.route("/checkout")
