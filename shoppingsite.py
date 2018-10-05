@@ -76,6 +76,10 @@ def show_shopping_cart():
     # Make sure your function can also handle the case wherein no cart has
     # been added to the session
 
+    if not session.get("logged_in_customer_email"):
+        flash("You are not currently logged in. Please log in to use cart.")
+        return redirect("/login")
+
     if not session.get("cart"):
         flash("Your cart is currently empty!")
         return redirect("/melons")
